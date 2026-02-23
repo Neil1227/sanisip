@@ -1,265 +1,376 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>SaniSip</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SaniSip</title>
 
-<!-- PWA Meta -->
-<meta name="description" content="Real-time campus water quality monitoring using IoT sensors.">
-<meta name="theme-color" content="#2196f3">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="SaniSip">
+  <!-- PWA Meta -->
+  <meta name="description" content="Real-time campus water quality monitoring using IoT sensors.">
+  <meta name="theme-color" content="#2196f3">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SaniSip">
 
-<!-- PWA Icons -->
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <!-- PWA Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 
-<!-- Fonts & Styles -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="sanisip.css">
+  <!-- Fonts & Styles -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="sanisip.css">
 
-<!-- Service Worker Registration -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('SW registered:', reg.scope))
-        .catch(err => console.warn('SW registration failed:', err));
-    });
-  }
-</script>
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
 </head>
+
 <body>
-<div class="shell">
+  <div class="shell">
 
-  <!-- TOP NAV -->
-  <nav class="nav">
-    <div class="nav-back">&#8592;</div>
-    <div class="nav-tabs">
-      <div class="nav-tab active" onclick="switchScreen('dashboard',this)">Dashboard</div>
-      <div class="nav-tab" onclick="switchScreen('filter',this)">Filter Alert</div>
-      <div class="nav-tab" onclick="switchScreen('about',this)">About</div>
-    </div>
-    <div class="nav-arrow">&#8594;</div>
-  </nav>
+    <!-- TOP NAV -->
+    <nav class="nav">
+      <div class="nav-back">&#8592;</div>
+      <div class="nav-tabs">
+        <div class="nav-tab active" onclick="switchScreen('dashboard',this)">Dashboard</div>
+        <div class="nav-tab" onclick="switchScreen('filter',this)">Filter Alert</div>
+        <div class="nav-tab" onclick="switchScreen('about',this)">About</div>
+      </div>
+      <div class="nav-arrow">&#8594;</div>
+    </nav>
 
-  <!-- ══ DASHBOARD SCREEN ══ -->
-  <div class="screen active" id="s-dashboard">
+    <!-- ══ DASHBOARD SCREEN ══ -->
+    <div class="screen active" id="s-dashboard">
 
-    <div class="top-row">
-      <div class="page-title">Latest Water Quality</div>
-      <div class="live"><div class="live-dot"></div>LIVE</div>
-    </div>
-
-    <!-- Metrics -->
-    <div class="card">
-      <div class="card-label">Sensor Readings</div>
-
-      <div class="metric">
-        <div class="m-icon i-tds">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2196f3" stroke-width="1.8"><path d="M12 2C6 9 4 13.5 4 16a8 8 0 0016 0c0-2.5-2-7-8-14z"/></svg>
+      <div class="top-row">
+        <div class="page-title">Latest Water Quality</div>
+        <div class="live">
+          <div class="live-dot"></div>LIVE
         </div>
-        <div class="m-body">
-          <div class="m-name">TDS</div>
-          <div class="m-val" id="tds-val">1.61 <small>ppm</small></div>
-          <div class="m-bar-wrap"><div class="m-bar b-warn" id="tds-bar" style="width:2%"></div></div>
-        </div>
-        <div class="m-tag t-warn" id="tds-tag">UNSAFE</div>
       </div>
 
-      <div class="metric">
-        <div class="m-icon i-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
-        </div>
-        <div class="m-body">
-          <div class="m-name">pH</div>
-          <div class="m-val" id="ph-val">6.66</div>
-          <div class="m-bar-wrap"><div class="m-bar b-neutral" id="ph-bar" style="width:48%"></div></div>
-        </div>
-        <div class="m-tag t-neutral" id="ph-tag">Neutral</div>
-      </div>
+      <!-- Metrics -->
+      <div class="card">
+        <div class="card-label">Sensor Readings</div>
 
-      <div class="metric">
-        <div class="m-icon i-turb">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
-        </div>
-        <div class="m-body">
-          <div class="m-name">Turbidity</div>
-          <div class="m-val" id="turb-val">0 <small>NTU</small></div>
-          <div class="m-bar-wrap"><div class="m-bar b-safe" id="turb-bar" style="width:1%"></div></div>
-        </div>
-        <div class="m-tag t-safe" id="turb-tag">Clear</div>
-      </div>
-    </div>
-
-    <!-- Overall -->
-    <div class="banner safe" id="banner">
-      <div class="banner-icon">✅</div>
-      <div>
-        <div class="banner-sub">Overall Status</div>
-        <div class="banner-main" id="banner-text">SAFE TO DRINK</div>
-      </div>
-    </div>
-
-    <!-- Trend -->
-    <div class="card">
-      <div class="card-label">TDS Trend</div>
-      <div class="trend-wrap">
-        <svg viewBox="0 0 300 56" preserveAspectRatio="none" id="trend-svg">
-          <defs>
-            <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#2196f3"/>
-              <stop offset="100%" stop-color="#22c55e"/>
-            </linearGradient>
-          </defs>
-          <polyline id="trend-line" fill="none" stroke="url(#tg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points=""/>
-        </svg>
-      </div>
-    </div>
-
-    <!-- View Alert Button -->
-    <button class="btn-primary" onclick="switchScreen('filter', document.querySelector('.nav-tab:nth-child(2)'))">View Alert</button>
-
-  </div>
-
-  <!-- ══ FILTER ALERT SCREEN ══ -->
-  <div class="screen" id="s-filter">
-
-    <div class="top-row">
-      <div class="page-title">Latest Filter Alert</div>
-    </div>
-
-    <div class="card">
-      <div class="card-label">Filter Status</div>
-
-      <div class="fa-row">
-        <div class="fa-icon">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </div>
-        <div class="fa-label">Days Used</div>
-        <div class="fa-val" id="fa-days">42 days</div>
-      </div>
-
-      <div class="fa-row">
-        <div class="fa-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 15 14"/></svg>
-        </div>
-        <div class="fa-label">Remaining Days</div>
-        <div class="fa-val" id="fa-remaining">48 days</div>
-      </div>
-
-      <div class="fa-row">
-        <div class="fa-icon">
-          <svg viewBox="0 0 24 24"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>
-        </div>
-        <div class="fa-label">Reset Filter</div>
-        <div class="fa-badge t-neutral" style="background:#f5f3ff;">Not Reset</div>
-      </div>
-
-      <div class="fa-row">
-        <div class="fa-icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div class="fa-label">Status</div>
-        <div class="fa-badge t-safe" id="fa-status">Good</div>
-      </div>
-    </div>
-
-    <!-- Filter life bar -->
-    <div class="card">
-      <div class="card-label">Filter Lifespan</div>
-      <div class="filter-bar-labels">
-        <span>Used</span><span>Remaining</span>
-      </div>
-      <div class="filter-bar-track">
-        <div id="filter-bar" class="filter-bar-fill" style="width:47%"></div>
-      </div>
-      <div class="filter-bar-meta">
-        <span class="filter-bar-pct" id="filter-pct">47%</span>
-        <span class="filter-bar-note">90-day filter</span>
-      </div>
-    </div>
-
-    <button class="btn-primary" onclick="switchScreen('dashboard', document.querySelector('.nav-tab:nth-child(1)'))">Back to Dashboard</button>
-  </div>
-
-  <!-- ══ ABOUT SCREEN ══ -->
-  <div class="screen" id="s-about">
-
-    <div class="card">
-      <div class="about-title">About SaniSip</div>
-      <div class="about-desc">SaniSip allows easy, real-time monitoring of campus water quality using IoT-based sensors and cloud data — no login required.</div>
-    </div>
-
-    <div class="card">
-      <div class="about-section-title">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-        How SaniSip Works
-      </div>
-      <div class="about-text">Sensors (TDS, pH, Turbidity) feed live readings to a campus database via Wi-Fi. SaniSip reads from the database and shows real-time safety status and sensor data right on your phone.</div>
-
-      <div class="sensor-row">
-        <div class="sensor-item">
-          <div class="sensor-icon si-blue">
-            <svg viewBox="0 0 24 24" stroke="#2196f3"><path d="M12 2C6 9 4 13.5 4 16a8 8 0 0016 0c0-2.5-2-7-8-14z"/></svg>
+        <div class="metric">
+          <div class="m-icon i-tds">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2196f3" stroke-width="1.8">
+              <path d="M12 2C6 9 4 13.5 4 16a8 8 0 0016 0c0-2.5-2-7-8-14z" />
+            </svg>
           </div>
-          <div class="sensor-name">TDS<br>Minerals</div>
-        </div>
-        <div class="sensor-item">
-          <div class="sensor-icon si-green">
-            <svg viewBox="0 0 24 24" stroke="#22c55e"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
+          <div class="m-body">
+            <div class="m-name">TDS</div>
+            <div class="m-val" id="tds-val">1.61 <small>ppm</small></div>
+            <div class="m-bar-wrap">
+              <div class="m-bar b-warn" id="tds-bar" style="width:2%"></div>
+            </div>
           </div>
-          <div class="sensor-name">pH<br>Acidity</div>
+          <div class="m-tag t-warn" id="tds-tag">UNSAFE</div>
         </div>
-        <div class="sensor-item">
-          <div class="sensor-icon si-yellow">
-            <svg viewBox="0 0 24 24" stroke="#f59e0b"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1" fill="#f59e0b"/></svg>
+
+        <div class="metric">
+          <div class="m-icon i-ph">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.8">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <path d="M8 12h8M12 8v8" />
+            </svg>
           </div>
-          <div class="sensor-name">Turbidity<br>Clarity</div>
+          <div class="m-body">
+            <div class="m-name">pH</div>
+            <div class="m-val" id="ph-val">6.66</div>
+            <div class="m-bar-wrap">
+              <div class="m-bar b-neutral" id="ph-bar" style="width:48%"></div>
+            </div>
+          </div>
+          <div class="m-tag t-neutral" id="ph-tag">Neutral</div>
+        </div>
+
+        <div class="metric">
+          <div class="m-icon i-turb">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.8">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="5" />
+              <circle cx="12" cy="12" r="1" />
+            </svg>
+          </div>
+          <div class="m-body">
+            <div class="m-name">Turbidity</div>
+            <div class="m-val" id="turb-val">0 <small>NTU</small></div>
+            <div class="m-bar-wrap">
+              <div class="m-bar b-safe" id="turb-bar" style="width:1%"></div>
+            </div>
+          </div>
+          <div class="m-tag t-safe" id="turb-tag">Clear</div>
         </div>
       </div>
+
+      <!-- Overall -->
+      <div class="banner safe" id="banner">
+        <div class="banner-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+          <div class="banner-sub">Overall Status</div>
+          <div class="banner-main" id="banner-text">SAFE TO DRINK</div>
+        </div>
+      </div>
+
+      <!-- Trend -->
+      <div class="card">
+        <div class="card-label">TDS Trend</div>
+        <div class="trend-wrap">
+          <svg viewBox="0 0 300 56" preserveAspectRatio="none" id="trend-svg">
+            <defs>
+              <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#2196f3" />
+                <stop offset="100%" stop-color="#22c55e" />
+              </linearGradient>
+            </defs>
+            <polyline id="trend-line" fill="none" stroke="url(#tg)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" points="" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- View Alert Button -->
+      <button class="btn-primary" onclick="switchScreen('filter', document.querySelector('.nav-tab:nth-child(2)'))">View
+        Alert</button>
+
     </div>
 
-    <div class="card about-info-card">
-      <div class="about-info-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2196f3" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <!-- ══ FILTER ALERT SCREEN ══ -->
+    <div class="screen" id="s-filter">
+
+      <div class="top-row">
+        <div class="page-title">Latest Filter Alert</div>
       </div>
-      <div>
-        <div class="about-info-title">Campus IoT Network</div>
-        <div class="about-info-sub">Real-time data via cloud sync. No account needed.</div>
+
+      <!-- Urgent alert banner (hidden by default) -->
+      <div id="filter-alert-banner" class="filter-alert-banner" style="display:none;">
+        <div class="fab-icon"></div>
+        <div class="fab-text"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Filter Status</div>
+
+        <!-- Days Used -->
+        <div class="fa-row">
+          <div class="fa-icon">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+          </div>
+          <div class="fa-label">Days Used</div>
+          <div class="fa-val" id="fa-days">—</div>
+        </div>
+
+        <!-- Start Date -->
+        <div class="fa-row">
+          <div class="fa-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <polyline points="12 6 12 12 15 14" />
+            </svg>
+          </div>
+          <div class="fa-label">Start Date</div>
+          <div class="fa-val" id="fa-status">—</div>
+        </div>
+
+        <!-- Filter Health -->
+        <div class="fa-row">
+          <div class="fa-icon">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+          </div>
+          <div class="fa-label">Filter Health</div>
+          <div class="fa-badge t-safe" id="fa-health">—</div>
+        </div>
+      </div>
+
+      <!-- Filter Lifespan Bar -->
+      <div class="card">
+        <div class="card-label">Filter Lifespan</div>
+        <div class="filter-bar-labels">
+          <span>Used</span><span>Remaining</span>
+        </div>
+        <div class="filter-bar-track">
+          <div id="filter-bar" class="filter-bar-fill" style="width:0%"></div>
+        </div>
+        <div class="filter-bar-meta">
+          <span class="filter-bar-pct" id="filter-pct">0%</span>
+          <span class="filter-bar-note">90-day filter</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="filter-actions">
+        <button class="filter-action-btn btn-set-date" id="btn-set-date" onclick="openDatePicker()">
+          <i class="fa-solid fa-calendar-plus"></i>
+          Set Start Date
+        </button>
+        <button class="filter-action-btn btn-reset-days" id="btn-reset-days" onclick="handleResetDays()">
+          <i class="fa-solid fa-rotate-right"></i>
+          Reset Days
+        </button>
+      </div>
+
+      <button class="btn-primary"
+        onclick="switchScreen('dashboard', document.querySelector('.nav-tab:nth-child(1)'))">Back to Dashboard</button>
+    </div>
+
+    <!-- ══ ABOUT SCREEN ══ -->
+    <div class="screen" id="s-about">
+
+      <div class="card">
+        <div class="about-title">About SaniSip</div>
+        <div class="about-desc">SaniSip allows easy, real-time monitoring of campus water quality using IoT-based
+          sensors and cloud data — no login required.</div>
+      </div>
+
+      <div class="card">
+        <div class="about-section-title">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" />
+          </svg>
+          How SaniSip Works
+        </div>
+        <div class="about-text">Sensors (TDS, pH, Turbidity) feed live readings to a campus database via Wi-Fi. SaniSip
+          reads from the database and shows real-time safety status and sensor data right on your phone.</div>
+
+        <div class="sensor-row">
+          <div class="sensor-item">
+            <div class="sensor-icon si-blue">
+              <svg viewBox="0 0 24 24" stroke="#2196f3">
+                <path d="M12 2C6 9 4 13.5 4 16a8 8 0 0016 0c0-2.5-2-7-8-14z" />
+              </svg>
+            </div>
+            <div class="sensor-name">TDS<br>Minerals</div>
+          </div>
+          <div class="sensor-item">
+            <div class="sensor-icon si-green">
+              <svg viewBox="0 0 24 24" stroke="#22c55e">
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            </div>
+            <div class="sensor-name">pH<br>Acidity</div>
+          </div>
+          <div class="sensor-item">
+            <div class="sensor-icon si-yellow">
+              <svg viewBox="0 0 24 24" stroke="#f59e0b">
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="5" />
+                <circle cx="12" cy="12" r="1" fill="#f59e0b" />
+              </svg>
+            </div>
+            <div class="sensor-name">Turbidity<br>Clarity</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card about-info-card">
+        <div class="about-info-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2196f3" stroke-width="1.8">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <div>
+          <div class="about-info-title">Campus IoT Network</div>
+          <div class="about-info-sub">Real-time data via cloud sync. No account needed.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+      <div class="b-tab active" id="bt-dashboard" onclick="switchScreen('dashboard',null,0)">
+        <div class="b-tab-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6 9 4 13.5 4 16a8 8 0 0016 0c0-2.5-2-7-8-14z" />
+          </svg>
+        </div>
+        <div class="b-tab-label">Dashboard</div>
+      </div>
+      <div class="b-tab" id="bt-filter" onclick="switchScreen('filter',null,1)">
+        <div class="b-tab-icon">
+          <svg viewBox="0 0 24 24">
+            <line x1="8" y1="6" x2="21" y2="6" />
+            <line x1="8" y1="12" x2="21" y2="12" />
+            <line x1="8" y1="18" x2="21" y2="18" />
+            <line x1="3" y1="6" x2="3.01" y2="6" />
+            <line x1="3" y1="12" x2="3.01" y2="12" />
+            <line x1="3" y1="18" x2="3.01" y2="18" />
+          </svg>
+        </div>
+        <div class="b-tab-label">Filter Alert</div>
+      </div>
+      <div class="b-tab" id="bt-about" onclick="switchScreen('about',null,2)">
+        <div class="b-tab-icon">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+        </div>
+        <div class="b-tab-label">About</div>
       </div>
     </div>
 
-  </div>
+    <!-- ══ DATE PICKER MODAL ══ -->
+    <div class="modal-overlay" id="datepicker-overlay" onclick="closeDatePicker()">
+      <div class="modal" onclick="event.stopPropagation()">
 
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <div class="b-tab active" id="bt-dashboard" onclick="switchScreen('dashboard',null,0)">
-      <div class="b-tab-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6 9 4 13.5 4 16a8 8 0 0016 0c0-2.5-2-7-8-14z"/></svg>
-      </div>
-      <div class="b-tab-label">Dashboard</div>
-    </div>
-    <div class="b-tab" id="bt-filter" onclick="switchScreen('filter',null,1)">
-      <div class="b-tab-icon">
-        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-      </div>
-      <div class="b-tab-label">Filter Alert</div>
-    </div>
-    <div class="b-tab" id="bt-about" onclick="switchScreen('about',null,2)">
-      <div class="b-tab-icon">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-      </div>
-      <div class="b-tab-label">About</div>
-    </div>
-  </div>
+        <div class="modal-icon" style="background:#f0f8ff;color:var(--accent);">
+          <i class="fa-solid fa-calendar-days"></i>
+        </div>
+        <div class="modal-title">Set Filter Start Date</div>
+        <div class="modal-desc">Choose the date you installed or replaced the filter. Days used will be calculated from
+          this date.</div>
 
-</div>
+        <!-- Date Input -->
+        <div class="datepicker-wrap">
+          <label class="datepicker-label">Select Date</label>
+          <div class="datepicker-input-wrap">
+            <i class="fa-solid fa-calendar fa-fw"></i>
+            <input type="date" id="date-input" class="datepicker-input" />
+          </div>
+        </div>
 
-<script src="sanisip.js" defer></script>
+        <div class="modal-actions">
+          <button class="modal-btn modal-cancel" onclick="closeDatePicker()">Cancel</button>
+          <button class="modal-btn modal-confirm" id="date-confirm-btn" onclick="handleSetStartDate()">
+            <i class="fa-solid fa-check"></i> Confirm
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.shell -->
+
+  <script src="sanisip.js" defer></script>
 </body>
+
 </html>
