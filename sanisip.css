@@ -539,14 +539,16 @@ body {
 }
 
 .datepicker-input-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
   background: var(--bg);
   border: 1.5px solid var(--border);
   border-radius: 10px;
-  padding: 12px 14px;
-  transition: border-color 0.15s;
+  padding: 13px 14px;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: pointer;
 }
 
 .datepicker-input-wrap:focus-within {
@@ -556,8 +558,9 @@ body {
 
 .datepicker-input-wrap i {
   color: var(--accent);
-  font-size: 14px;
+  font-size: 15px;
   flex-shrink: 0;
+  pointer-events: none;
 }
 
 .datepicker-input {
@@ -565,37 +568,41 @@ body {
   border: none;
   background: transparent;
   font-family: 'DM Mono', monospace;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--text);
   outline: none;
   cursor: pointer;
   min-width: 0;
+  width: 100%;
 }
 
+/* Stretch native picker indicator over the whole row */
 .datepicker-input::-webkit-calendar-picker-indicator {
-  opacity: 0;
   position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  opacity: 0;
   cursor: pointer;
 }
 
-/* ══ CONFIRMATION MODAL ══ */
+/* ══ MODAL OVERLAY ══ */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  /* full viewport — not clipped to shell */
+  background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 100;
   display: flex;
   align-items: flex-end;
+  /* sheet from bottom on mobile */
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
-  max-width: 420px;
-  left: 50%;
-  transform: translateX(-50%);
+  transition: opacity 0.22s ease;
 }
 
 .modal-overlay.active {
@@ -603,18 +610,31 @@ body {
   pointer-events: all;
 }
 
+/* ══ MODAL SHEET ══ */
 .modal {
   background: var(--white);
   border-radius: 24px 24px 0 0;
-  padding: 28px 24px 36px;
+  padding: 8px 24px max(36px, env(safe-area-inset-bottom));
   width: 100%;
-  transform: translateY(20px);
-  transition: transform 0.25s ease;
+  max-width: 480px;
+  transform: translateY(24px);
+  transition: transform 0.26s cubic-bezier(0.32, 0.72, 0, 1);
   text-align: center;
 }
 
 .modal-overlay.active .modal {
   transform: translateY(0);
+}
+
+/* Drag handle pill */
+.modal::before {
+  content: '';
+  display: block;
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin: 12px auto 20px;
 }
 
 .modal-icon {
@@ -634,14 +654,17 @@ body {
   font-size: 17px;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .modal-desc {
   font-size: 13px;
   color: var(--muted);
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modal-actions {
@@ -651,7 +674,7 @@ body {
 
 .modal-btn {
   flex: 1;
-  padding: 13px;
+  padding: 14px;
   border-radius: 12px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -659,6 +682,12 @@ body {
   cursor: pointer;
   border: none;
   transition: all 0.15s;
+  min-height: 48px;
+  /* accessible tap target */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
 }
 
 .modal-btn:active {
@@ -687,6 +716,31 @@ body {
 .modal-confirm:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ── Tablet / desktop: center the modal as a floating card ── */
+@media (min-width: 520px) {
+  .modal-overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .modal {
+    border-radius: 20px;
+    max-width: 400px;
+    padding: 32px 28px;
+  }
+
+  .modal::before {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .modal {
+    max-width: 420px;
+    padding: 36px 32px;
+  }
 }
 
 /* ══ FILTER ALERT BANNER ══ */
