@@ -23,7 +23,26 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
-
+#ptr-indicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -48px);
+  width: 36px;
+  height: 36px;
+  background: var(--accent, #2196f3);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0;
+  z-index: 999;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
 /* ── Base ── */
 body {
   background: #dde3ec;

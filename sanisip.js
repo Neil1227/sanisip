@@ -188,12 +188,19 @@ async function tick() {
 // ══ FILTER ALERT — READ ══
 async function initFilterAlert() {
     try {
-        const res = await fetch(FILTER_URL);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const [filterRes, waterRes] = await Promise.all([
+            fetch(FILTER_URL),
+            fetch(WATER_URL)
+        ]);
 
-        const data       = await res.json();
-        const startDate  = data.StartDate       || null;
-        const daysUsed   = parseInt(data.FilterDaysUsed) || 0;
+        if (!filterRes.ok) throw new Error(`FilterData HTTP ${filterRes.status}`);
+        if (!waterRes.ok)  throw new Error(`WaterData HTTP ${waterRes.status}`);
+
+        const filterData = await filterRes.json();
+        const waterData  = await waterRes.json();
+
+        const startDate  = filterData.StartDate || null;
+        const daysUsed   = parseInt(waterData.FilterDaysUsed) || 0;
         const daysLeft   = Math.max(FILTER_LIFE_DAYS - daysUsed, 0);
         const pct        = Math.min(Math.round((daysUsed / FILTER_LIFE_DAYS) * 100), 100);
         const isExpired  = daysLeft === 0;
@@ -229,7 +236,7 @@ async function initFilterAlert() {
             filterBar.style.width = pct + '%';
             if (isExpired)      filterBar.style.background = '#ef4444';
             else if (isWarning) filterBar.style.background = 'linear-gradient(90deg,#f59e0b,#ef4444)';
-            else                filterBar.style.background = '';  // use CSS default
+            else                filterBar.style.background = '';
         }
         if (filterPct) filterPct.textContent = pct + '%';
 
@@ -351,7 +358,69 @@ async function handleResetDays() {
         document.getElementById(btnId).disabled  = false;
     }
 }
+// ══ PULL TO REFRESH ══
+function initPullToRefresh() {
+    let startY     = 0;
+    let isPulling  = false;
+    const threshold = 80;
 
+    const shell = document.querySelector('.shell');
+
+    shell.addEventListener('touchstart', e => {
+        if (window.scrollY === 0) {
+            startY    = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+
+    shell.addEventListener('touchmove', e => {
+        if (!isPulling) return;
+        const pullDist = e.touches[0].clientY - startY;
+        if (pullDist > 0 && pullDist < threshold + 20) {
+            const indicator = document.getElementById('ptr-indicator');
+            if (indicator) {
+                indicator.style.transform  = `translateY(${Math.min(pullDist * 0.5, 40)}px)`;
+                indicator.style.opacity    = Math.min(pullDist / threshold, 1);
+                indicator.querySelector('i').style.transform =
+                    `rotate(${(pullDist / threshold) * 360}deg)`;
+            }
+        }
+    }, { passive: true });
+
+    shell.addEventListener('touchend', async e => {
+        if (!isPulling) return;
+        isPulling = false;
+
+        const pullDist = e.changedTouches[0].clientY - startY;
+        const indicator = document.getElementById('ptr-indicator');
+
+        if (pullDist >= threshold) {
+            if (indicator) {
+                indicator.style.transform = 'translateY(48px)';
+                indicator.querySelector('i').className = 'fa-solid fa-spinner fa-spin';
+            }
+
+            await Promise.all([tick(), initFilterAlert()]);
+
+            if (indicator) {
+                indicator.querySelector('i').className = 'fa-solid fa-check';
+                setTimeout(() => resetIndicator(indicator), 800);
+            }
+        } else {
+            if (indicator) resetIndicator(indicator);
+        }
+    });
+}
+
+function resetIndicator(indicator) {
+    indicator.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+    indicator.style.transform  = 'translateY(-48px)';
+    indicator.style.opacity    = '0';
+    setTimeout(() => {
+        indicator.style.transition = '';
+        indicator.querySelector('i').className = 'fa-solid fa-arrows-rotate';
+    }, 300);
+}
 // ══ BOOT ══
 document.addEventListener('DOMContentLoaded', () => {
     initFilterAlert();
